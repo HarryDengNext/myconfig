@@ -32,6 +32,10 @@
 
   )
 
+;; 启用系统剪贴板交互
+(setq select-enable-clipboard t)
+(setq select-enable-primary t) ; （可选）使用 X primary selection（Linux 特定）
+
 ;;(setq indent-line-function 'insert-four-spaces)
 ;;(global-set-key (kbd "TAB") 'insert-four-spaces)
 
