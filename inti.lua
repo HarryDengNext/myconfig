@@ -18,3 +18,6 @@ vim.opt.smartcase = true       -- 智能大小写搜索
 vim.opt.wrap = false           -- 禁用自动换行
 vim.opt.mouse = "a"            -- 启用鼠标支持
 vim.opt.clipboard = "unnamedplus" -- 使用系统剪贴板
+
+-- (setq display-line-numbers-type 'relative) 
+-- vim.opt.rnu = true
