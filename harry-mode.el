@@ -114,6 +114,10 @@
   (setq-local font-lock-defaults '(harry-mode-font-lock-keywords))
   (display-line-numbers-mode 1)
   
+  ;; 禁用自动缩进
+  (setq-local electric-indent-mode nil)
+  (setq-local electric-indent-chars nil)
+  
   ;; 绑定Tab键到缩进函数
   (local-set-key (kbd "TAB") 'harry-mode-indent-line)
   
@@ -121,14 +125,16 @@
   (local-set-key (kbd "C-c C-i") 'harry-mode-toggle-indent-width)
   (local-set-key (kbd "C-c C-c") 'harry-mode-toggle-comment-style)
   
-  ;; 添加回车缩进
-  (local-set-key (kbd "RET") 'newline-and-indent))
+  ;; 绑定回车键为普通换行
+  (local-set-key (kbd "RET") 'newline))
 
 ;; 设置默认缩进
 (add-hook 'harry-mode-hook
           (lambda ()
             (setq-local tab-width harry-mode-tab-width)
-            (setq-local indent-tabs-mode nil)))
+            (setq-local indent-tabs-mode nil)
+            ;; 确保禁用自动缩进
+            (electric-indent-local-mode -1)))
 
 (provide 'harry-mode)
 
