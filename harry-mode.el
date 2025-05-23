@@ -35,7 +35,7 @@
   "A custom major mode for Harry."
   :group 'languages)
 
-(defcustom harry-mode-tab-width 4
+(defcustom harry-mode-tab-width 8 ;; change the indent at here
   "Default tab width for harry-mode."
   :type 'integer
   :group 'harry-mode)
@@ -72,6 +72,8 @@
     (modify-syntax-entry ?/ ". 124b" table)
     (modify-syntax-entry ?* ". 23" table)
     (modify-syntax-entry ?\n "> b" table)
+    ;; (modify-syntax-entry ?# "< b" table)  ; # 作为注释开始
+    ;; (modify-syntax-entry ?\n "> b" table) ; 换行作为注释结束
     table))
 
 ;; 定义字体锁定关键字
@@ -97,45 +99,10 @@
 
 ;; 定义缩进函数
 (defun harry-mode-indent-line ()
-  "Indent current line in harry-mode."
+  "Indent current line in harry-mode by harry-mode-tab-width spaces."
   (interactive)
-  (let ((indent-col (harry-mode-calculate-indent)))
-    (when indent-col
-      (indent-line-to indent-col))))
-
-(defun harry-mode-calculate-indent ()
-  "Calculate the indentation for the current line."
-  (save-excursion
-    (back-to-indentation)
-    (let ((indent 0)
-          (prev-line-indent 0))
-      ;; 获取上一行的缩进
-      (forward-line -1)
-      (back-to-indentation)
-      (setq prev-line-indent (current-column))
-      
-      ;; 检查当前行和上一行的内容
-      (forward-line 1)
-      (back-to-indentation)
-      
-      (cond
-       ;; 如果当前行以 } 开头，减少缩进
-       ((looking-at "}")
-        (setq indent (- prev-line-indent harry-mode-tab-width)))
-       
-       ;; 如果上一行以 { 结尾，增加缩进
-       ((save-excursion
-          (forward-line -1)
-          (end-of-line)
-          (backward-char)
-          (looking-at "{"))
-        (setq indent (+ prev-line-indent harry-mode-tab-width)))
-       
-       ;; 其他情况保持与上一行相同的缩进
-       (t
-        (setq indent prev-line-indent)))
-      
-      (max 0 indent))))
+  (let ((current-indent (current-indentation)))
+    (indent-line-to (+ current-indent harry-mode-tab-width))))
 
 ;; 定义主模式
 (define-derived-mode harry-mode text-mode "Harry"
@@ -150,17 +117,18 @@
   ;; 绑定Tab键到缩进函数
   (local-set-key (kbd "TAB") 'harry-mode-indent-line)
   
-  ;; 启用自动缩进
-  (setq-local electric-indent-mode t)
-  (setq-local electric-indent-chars '(?\n ?{ ?} ?: ?;)))
+  ;; 绑定快捷键
+  (local-set-key (kbd "C-c C-i") 'harry-mode-toggle-indent-width)
+  (local-set-key (kbd "C-c C-c") 'harry-mode-toggle-comment-style)
+  
+  ;; 添加回车缩进
+  (local-set-key (kbd "RET") 'newline-and-indent))
 
 ;; 设置默认缩进
 (add-hook 'harry-mode-hook
           (lambda ()
             (setq-local tab-width harry-mode-tab-width)
-            (setq-local indent-tabs-mode nil)
-            ;; 启用自动缩进
-            (electric-indent-local-mode 1)))
+            (setq-local indent-tabs-mode nil)))
 
 (provide 'harry-mode)
 
